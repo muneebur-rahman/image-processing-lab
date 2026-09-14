@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Processing Lab — Interactive OpenCV Practicals</title>
+  <meta name="description" content="College Image Processing Lab web application featuring 11 interactive practicals powered by real Python OpenCV operations." />
+  
+  <!-- Google Fonts: Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <!-- FontAwesome for Lab Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand" id="brand-logo" onclick="navigateTo('home')">
+        <div class="logo-icon"><i class="fa-solid fa-microscope"></i></div>
+        <div class="brand-text">
+          <span class="brand-title">IP Lab</span>
+          <span class="brand-sub">Computer Vision Lab</span>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <button class="nav-link active" id="nav-home-btn" onclick="navigateTo('home')">
+          <i class="fa-solid fa-house"></i> Home
+        </button>
+        <button class="nav-link" id="nav-practicals-btn" onclick="navigateTo('home', '#practicals-section')">
+          <i class="fa-solid fa-flask-vial"></i> Practicals (1-11)
+        </button>
+        <button class="nav-link" id="nav-about-btn" onclick="openAboutModal()">
+          <i class="fa-solid fa-circle-info"></i> About & Docs
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Application Container -->
+  <main class="main-content">
+    
+    <!-- HOME VIEW: Hero Banner & 11 Practical Cards -->
+    <section id="home-view" class="view-section active">
+      <div class="hero-section">
+        <div class="hero-badge"><i class="fa-solid fa-cube"></i> Python OpenCV Powered &bull; 5th Sem IP Syllabus</div>
+        <h1 class="hero-title">Image Processing Lab</h1>
+        <p class="hero-subtitle">Interactive Image Processing Practicals using OpenCV</p>
+        <p class="hero-desc">
+          Perform digital image processing experiments with real-time OpenCV computations. 
+          Upload custom images or choose lab samples, adjust algorithmic parameters, observe spatial transformations, and download verified output images with one click.
+        </p>
+
+        <!-- Quick filter / search -->
+        <div class="search-bar-wrap">
+          <div class="search-input-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="practical-search-input" placeholder="Search practicals by title or operation (e.g., Canny, Inpaint, Histogram, Haar)..." oninput="filterPracticals()" />
+          </div>
+          <div class="stats-pill">
+            <i class="fa-solid fa-circle-check"></i> <span id="total-practicals-count">11</span> Practicals Ready
+          </div>
+        </div>
+      </div>
+
+      <!-- Practicals Grid -->
+      <section id="practicals-section" class="practicals-section">
+        <div class="section-header">
+          <h2 class="section-title"><i class="fa-solid fa-list-check"></i> Lab Curriculum Practicals</h2>
+          <p class="section-subtitle">Select any practical to launch its interactive OpenCV workstation.</p>
+        </div>
+
+        <div class="practicals-grid" id="practicals-cards-container">
+          <!-- Dynamically populated by script.js -->
+        </div>
+      </section>
+    </section>
+
+    <!-- PRACTICAL WORKSTATION VIEW -->
+    <section id="workstation-view" class="view-section">
+      <!-- Breadcrumb Bar -->
+      <div class="breadcrumb-bar">
+        <button class="back-btn" id="btn-back-to-practicals" onclick="navigateTo('home')">
+          <i class="fa-solid fa-arrow-left"></i> Back to Practicals
+        </button>
+        <div class="breadcrumb-trail">
+          <span>Home</span>
+          <i class="fa-solid fa-chevron-right"></i>
+          <span>Practicals</span>
+          <i class="fa-solid fa-chevron-right"></i>
+          <span class="active-crumb" id="breadcrumb-title">Practical 1</span>
+        </div>
+      </div>
+
+      <!-- Workstation Header -->
+      <div class="workstation-header">
+        <div class="practical-title-wrap">
+          <span class="practical-tag" id="workstation-practical-tag">Practical 1</span>
+          <h2 class="workstation-title" id="workstation-title">Image Basics & Arithmetic Operations</h2>
+          <p class="workstation-desc" id="workstation-desc">Perform color conversions and mathematical pixel arithmetic using OpenCV.</p>
+        </div>
+        <div class="workstation-actions">
+          <button class="btn btn-outline" id="btn-open-theory" onclick="toggleTheoryAccordion()">
+            <i class="fa-solid fa-book-open"></i> Theory & Reference
+          </button>
+        </div>
+      </div>
+
+      <!-- Theory & Reference Accordion (Collapsible) -->
+      <div class="theory-card" id="theory-card">
+        <div class="theory-card-header">
+          <h4><i class="fa-solid fa-graduation-cap"></i> Academic Theory & OpenCV Reference</h4>
+          <button class="close-theory-btn" onclick="toggleTheoryAccordion()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="theory-content" id="theory-content-body">
+          <!-- Populated dynamically based on active practical -->
+        </div>
+      </div>
+
+      <!-- Operation Selector Tabs -->
+      <div class="operations-bar">
+        <span class="operations-label"><i class="fa-solid fa-sliders"></i> Select Operation:</span>
+        <div class="operation-tabs" id="operation-tabs-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Main Lab Interactive Workspace (2 Columns) -->
+      <div class="workspace-grid">
+        
+        <!-- Left Column: Controls & Upload Area -->
+        <div class="controls-column">
+          
+          <!-- Image Upload Box -->
+          <div class="lab-card upload-card">
+            <div class="card-header-row">
+              <h3><i class="fa-solid fa-upload"></i> Input Image</h3>
+              <div class="input-header-actions">
+                <button class="sample-btn camera-btn" id="btn-use-camera" onclick="openCameraModal()" title="Capture from webcam/device camera">
+                  <i class="fa-solid fa-camera"></i> Use Camera
+                </button>
+                <button class="sample-btn" id="btn-load-sample" onclick="loadSampleImage()">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Load Lab Sample
+                </button>
+              </div>
+            </div>
+
+            <!-- Primary Dropzone -->
+            <div class="dropzone" id="primary-dropzone">
+              <input type="file" id="primary-file-input" accept=".jpg,.jpeg,.png,.webp" class="file-input-hidden" />
+              <div class="dropzone-content" id="dropzone-prompt">
+                <div class="dropzone-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                <p class="dropzone-title"><strong>Click to upload</strong> or drag & drop</p>
+                <p class="dropzone-hint">Supports JPG, JPEG, PNG, WEBP (Max 10MB)</p>
+                <div class="dropzone-sub-actions">
+                  <button type="button" class="dropzone-action-pill" onclick="openCameraModal(event)">
+                    <i class="fa-solid fa-camera"></i> Or capture with Camera
+                  </button>
+                </div>
+              </div>
+              <div class="file-meta-badge" id="primary-file-meta" style="display: none;">
+                <div class="file-meta-left">
+                  <i class="fa-solid fa-file-image" id="file-type-icon"></i>
+                  <span id="primary-filename">sample.png</span>
+                  <span class="file-meta-size" id="primary-filesize">250 KB</span>
+                </div>
+                <div class="file-meta-right">
+                  <button class="retake-btn" id="btn-retake-camera" onclick="openCameraModal()" style="display: none;" title="Retake photo using camera">
+                    <i class="fa-solid fa-rotate-left"></i> Retake
+                  </button>
+                  <button class="clear-file-btn" onclick="clearPrimaryFile(event)" title="Clear image"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Secondary Dropzone (Only for Practical 1 Bitwise AND/OR) -->
+            <div class="secondary-upload-wrapper" id="secondary-upload-container" style="display: none;">
+              <div class="secondary-info-badge">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>Bitwise operations combine two images. Upload a second image below (will be automatically resized to match the primary image), or use the automatic geometric mask!</span>
+              </div>
+              <div class="dropzone secondary-dropzone" id="secondary-dropzone">
+                <input type="file" id="secondary-file-input" accept=".jpg,.jpeg,.png,.webp" class="file-input-hidden" />
+                <div class="dropzone-content" id="secondary-dropzone-prompt">
+                  <div class="dropzone-icon"><i class="fa-solid fa-images"></i></div>
+                  <p class="dropzone-title"><strong>Upload 2nd Image</strong> (Optional for AND/OR)</p>
+                  <p class="dropzone-hint">Combines with primary image via pixel bitwise logic</p>
+                </div>
+                <div class="file-meta-badge" id="secondary-file-meta" style="display: none;">
+                  <i class="fa-solid fa-file-image"></i>
+                  <span id="secondary-filename">mask.png</span>
+                  <button class="clear-file-btn" onclick="clearSecondaryFile(event)"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Operation Parameters Card -->
+          <div class="lab-card params-card">
+            <div class="card-header-row">
+              <h3><i class="fa-solid fa-gears"></i> Operation Parameters</h3>
+              <button class="reset-params-btn" onclick="resetCurrentParams()"><i class="fa-solid fa-rotate-left"></i> Reset Defaults</button>
+            </div>
+            
+            <div class="params-body" id="params-container">
+              <!-- Dynamically populated with sliders/inputs according to selected operation -->
+            </div>
+          </div>
+
+          <!-- Action Buttons Bar -->
+          <div class="action-buttons-wrap">
+            <button class="btn btn-primary" id="btn-process-image" onclick="processCurrentImage()">
+              <span class="btn-spinner" id="process-spinner" style="display: none;">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+              </span>
+              <span id="btn-process-text"><i class="fa-solid fa-play"></i> Process Image</span>
+            </button>
+            
+            <button class="btn btn-secondary" id="btn-reset-all" onclick="resetWorkstation()">
+              <i class="fa-solid fa-arrow-rotate-left"></i> Reset
+            </button>
+          </div>
+
+          <!-- Compression Specific Metrics Card (Practical 7) -->
+          <div class="lab-card metrics-card" id="compression-metrics-card" style="display: none;">
+            <h3><i class="fa-solid fa-chart-pie"></i> Real Compression Metrics</h3>
+            <div class="metrics-grid">
+              <div class="metric-item">
+                <span class="metric-label">Original Size</span>
+                <span class="metric-val" id="metric-orig-size">0 KB</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Compressed Size</span>
+                <span class="metric-val" id="metric-comp-size">0 KB</span>
+              </div>
+              <div class="metric-item highlight">
+                <span class="metric-label">Storage Saved</span>
+                <span class="metric-val" id="metric-savings">0%</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Compression Ratio</span>
+                <span class="metric-val" id="metric-ratio">1.0x</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detection Specific Metrics Card (Practical 9) -->
+          <div class="lab-card metrics-card" id="detection-metrics-card" style="display: none;">
+            <h3><i class="fa-solid fa-crosshairs"></i> Detection Analytics</h3>
+            <div class="metrics-grid">
+              <div class="metric-item highlight">
+                <span class="metric-label">Detected Objects</span>
+                <span class="metric-val" id="metric-detect-count">0</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Cascade Classifier</span>
+                <span class="metric-val" id="metric-cascade-name">Haar Frontal Face</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Visualizer (Original vs Processed) -->
+        <div class="visualizer-column">
+          
+          <div class="lab-card visualizer-card">
+            <div class="visualizer-toolbar">
+              <div class="view-mode-toggle">
+                <button class="mode-btn active" id="btn-mode-side" onclick="setViewMode('side')">
+                  <i class="fa-solid fa-table-columns"></i> Side by Side
+                </button>
+                <button class="mode-btn" id="btn-mode-result" onclick="setViewMode('result')">
+                  <i class="fa-solid fa-image"></i> Processed Only
+                </button>
+              </div>
+
+              <!-- ONE-CLICK DOWNLOAD BUTTON (HIGH PRIORITY REQUIREMENT) -->
+              <button class="btn btn-download" id="btn-download-result" onclick="downloadCurrentResult()" disabled>
+                <i class="fa-solid fa-download"></i> Download Result
+              </button>
+            </div>
+
+            <!-- Inpainting Canvas Controls Bar (Practical 6 Only) -->
+            <div class="canvas-paint-toolbar" id="inpaint-paint-toolbar" style="display: none;">
+              <div class="paint-tool-item">
+                <label><i class="fa-solid fa-paintbrush"></i> Brush Size: <span id="brush-size-val">20</span>px</label>
+                <input type="range" id="brush-size-slider" min="5" max="60" value="20" oninput="updateBrushSize(this.value)" />
+              </div>
+              <div class="paint-tool-actions">
+                <button class="btn btn-sm btn-outline" onclick="clearInpaintMask()"><i class="fa-solid fa-eraser"></i> Clear Marking</button>
+                <button class="btn btn-sm btn-outline" onclick="applySampleScratch()"><i class="fa-solid fa-burst"></i> Add Sample Scratches</button>
+              </div>
+            </div>
+
+            <!-- Image Comparison Workspace -->
+            <div class="comparison-container side-by-side" id="comparison-wrapper">
+              
+              <!-- Original Image Panel -->
+              <div class="image-panel" id="original-image-panel">
+                <div class="image-panel-header">
+                  <span class="panel-badge original-badge"><i class="fa-solid fa-image"></i> Original Image</span>
+                  <span class="image-dim-badge" id="orig-dim-badge">-- x --</span>
+                </div>
+                
+                <div class="canvas-container" id="orig-canvas-container">
+                  <div class="empty-placeholder" id="orig-empty-placeholder">
+                    <i class="fa-regular fa-image"></i>
+                    <p>No image uploaded yet</p>
+                    <span>Upload an image or click "Load Lab Sample"</span>
+                  </div>
+                  <!-- Main display image -->
+                  <img id="orig-image-display" src="" alt="Original Preview" style="display: none;" />
+                  
+                  <!-- Inpainting interactive paint overlay canvas -->
+                  <canvas id="inpaint-drawing-canvas" style="display: none;"></canvas>
+                </div>
+              </div>
+
+              <!-- Processed Image Panel -->
+              <div class="image-panel" id="processed-image-panel">
+                <div class="image-panel-header">
+                  <span class="panel-badge processed-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> Processed Result</span>
+                  <span class="image-dim-badge" id="proc-dim-badge">-- x --</span>
+                </div>
+
+                <div class="canvas-container" id="proc-canvas-container">
+                  <!-- Processing Loader Overlay -->
+                  <div class="processing-overlay" id="processing-loader" style="display: none;">
+                    <div class="loader-spinner"></div>
+                    <p class="loader-text">Processing image with OpenCV...</p>
+                    <span class="loader-sub">Computing real pixel transformations</span>
+                  </div>
+
+                  <div class="empty-placeholder" id="proc-empty-placeholder">
+                    <i class="fa-solid fa-flask"></i>
+                    <p>Processed result will appear here</p>
+                    <span>Click "Process Image" after configuring parameters</span>
+                  </div>
+
+                  <img id="proc-image-display" src="" alt="Processed Result Preview" style="display: none;" />
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Process Status & OpenCV Feedback Banner -->
+            <div class="status-banner" id="status-banner" style="display: none;">
+              <div class="status-icon" id="status-icon"><i class="fa-solid fa-circle-check"></i></div>
+              <div class="status-info">
+                <p class="status-text" id="status-message">Operation completed successfully.</p>
+                <span class="status-runtime" id="status-runtime">Execution time: 14.2ms</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Camera Live Capture Modal -->
+  <div class="modal-overlay" id="camera-modal" style="display: none;">
+    <div class="modal-card camera-modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-camera"></i>
+          <h3>Camera Capture</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeCameraModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body camera-modal-body">
+        <div class="camera-stream-container">
+          <video id="camera-video-stream" autoplay playsinline muted></video>
+          <canvas id="camera-capture-canvas" style="display: none;"></canvas>
+          <div class="camera-live-badge">
+            <span class="live-dot"></span> LIVE CAMERA
+          </div>
+          <!-- Viewfinder crosshair overlay -->
+          <div class="camera-viewfinder"></div>
+          
+          <!-- Camera Loading / Permission Banner -->
+          <div class="camera-prompt-overlay" id="camera-prompt-overlay">
+            <div class="loader-spinner"></div>
+            <p id="camera-prompt-text">Accessing camera...</p>
+            <span id="camera-prompt-sub">Please allow camera permissions if prompted by your browser</span>
+          </div>
+        </div>
+
+        <div class="camera-controls-bar">
+          <button class="btn btn-sm btn-outline" id="btn-switch-camera" onclick="switchCamera()">
+            <i class="fa-solid fa-arrows-rotate"></i> Flip Camera
+          </button>
+          
+          <button class="btn btn-capture" id="btn-capture-photo" onclick="capturePhotoFromStream()">
+            <i class="fa-solid fa-circle-dot"></i> Capture Photo
+          </button>
+          
+          <button class="btn btn-sm btn-secondary" onclick="closeCameraModal()">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- About & Syllabus Modal -->
+  <div class="modal-overlay" id="about-modal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-flask-vial"></i>
+          <h3>About Image Processing Lab</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeAboutModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p>This web application is an <strong>interactive Image Processing Lab</strong> built using <strong>Python, OpenCV and Flask</strong> for the college <strong>Image Processing Subject (5th Semester)</strong>. It provides interactive, verified implementations of all 11 curriculum practicals with actual image processing computations.</p>
+        
+        <h4>Key Technical Highlights:</h4>
+        <ul class="modal-features-list">
+          <li><strong>100% Real OpenCV Processing:</strong> Every uploaded or camera-captured image is decoded into a NumPy matrix and processed using native OpenCV (<code>cv2</code>) algorithms. No fake or pre-rendered outputs.</li>
+          <li><strong>Live Camera Capture:</strong> Native browser camera capture using the MediaDevices API, enabling direct photo capture for instant processing across all 11 practicals.</li>
+          <li><strong>One-Click Direct Download:</strong> High-resolution processed images are instantly downloadable with semantic naming conventions.</li>
+          <li><strong>Interactive Damage Masking:</strong> Practical 6 features an HTML5 canvas brush allowing students to draw scratches and mark defect regions in real-time.</li>
+          <li><strong>Real Byte Compression Analysis:</strong> Practical 7 calculates actual compression savings and ratios dynamically.</li>
+        </ul>
+
+        <h4>Curriculum Coverage:</h4>
+        <div class="syllabus-grid">
+          <div class="syllabus-item"><strong>P1:</strong> Basics & Bitwise Arithmetic</div>
+          <div class="syllabus-item"><strong>P2:</strong> Geometric Transformations</div>
+          <div class="syllabus-item"><strong>P3:</strong> Image Enhancement</div>
+          <div class="syllabus-item"><strong>P4:</strong> Spatial Domain Enhancement</div>
+          <div class="syllabus-item"><strong>P5:</strong> Spatial Filters</div>
+          <div class="syllabus-item"><strong>P6:</strong> Image Inpainting</div>
+          <div class="syllabus-item"><strong>P7:</strong> Image Compression</div>
+          <div class="syllabus-item"><strong>P8:</strong> Morphological Operations</div>
+          <div class="syllabus-item"><strong>P9:</strong> Object Detection (Haar)</div>
+          <div class="syllabus-item"><strong>P10:</strong> Edge Detection (Canny)</div>
+          <div class="syllabus-item"><strong>P11:</strong> Colour Spaces (HSV, LAB, etc.)</div>
+        </div>
+
+        <!-- Professional Developer Credit Section in About -->
+        <div class="developer-credit-box">
+          <div class="dev-avatar">
+            <img src="/assets/muneebur-rahman.jpeg" alt="Muneebur Rahman" class="dev-profile-img" onerror="this.src='assets/muneebur-rahman.jpeg'" />
+          </div>
+          <div class="dev-details">
+            <span class="dev-label">Project Development &amp; Architecture</span>
+            <h4 class="dev-name">Developed by Muneebur Rahman</h4>
+            <p class="dev-sub">B.Tech CSE | S. B. Jain Institute of Technology, Management &amp; Research</p>
+            <p class="dev-note">Interactive Image Processing Lab using Python, OpenCV and Flask</p>
+          </div>
+        </div>
+
+        <div class="modal-meta-box">
+          <span><strong>Backend:</strong> Python 3.13 &bull; Flask &bull; OpenCV (<code>cv2</code>) &bull; NumPy</span>
+          <span><strong>Frontend:</strong> HTML5 &bull; Vanilla CSS3 &bull; Vanilla JavaScript ES6 &bull; MediaDevices API</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Professional Lab Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div class="footer-col footer-col-main">
+        <span class="footer-brand"><i class="fa-solid fa-microscope"></i> Image Processing Lab</span>
+        <p class="footer-desc">Interactive Image Processing Lab using Python, OpenCV and Flask</p>
+        <p class="footer-credit">Developed by <strong>Muneebur Rahman</strong> &bull; B.Tech CSE | S. B. Jain Institute of Technology, Management &amp; Research</p>
+      </div>
+      <div class="footer-col footer-col-links">
+        <span class="footer-dept">Department of Computer Science &amp; Engineering</span>
+        <span class="footer-sem">5th Semester &bull; Computer Vision &amp; Image Processing Practicals</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
